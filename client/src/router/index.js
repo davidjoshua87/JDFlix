@@ -1,27 +1,43 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Vue from 'vue';
+import Router from 'vue-router';
+// import SearchView from '../views/SearchView'
+// import MoviesView from '../views/MoviesView'
+// import TvShowsView from '../views/TvShowsView'
+import TopsView from '../views/TopsView.vue';
 
-Vue.use(VueRouter)
+Vue.use(Router);
 
-const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
-]
-
-const router = new VueRouter({
-  routes
-})
-
-export default router
+export default new Router({
+  // mode: 'history',
+  // base: process.env.NODE_ENV === 'development' ? '/' : '/vue-movies/',
+  routes: [
+    {
+      path: '/',
+      redirect: { name: 'tops' },
+    },
+    {
+      path: '/tops',
+      name: 'tops',
+      component: TopsView,
+    },
+    // {
+    //   path: '/search',
+    //   name: 'search',
+    //   component: SearchView
+    // },
+    // {
+    //   path: '/movies',
+    //   name: 'movies',
+    //   component: MoviesView
+    // },
+    // {
+    //   path: '/tv-shows',
+    //   name: 'tv-shows',
+    //   component: TvShowsView
+    // },
+    {
+      path: '/*',
+      redirect: { name: 'tops' },
+    },
+  ],
+});

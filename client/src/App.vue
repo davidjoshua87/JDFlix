@@ -1,32 +1,110 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <header>
+      <NavBar />
+    </header>
+    {{ }}
+    <body>
+      <section>
+        <keep-alive>
+          <router-view :key="$route.fullPath" @open-modal="toggleModal" />
+        </keep-alive>
+        <ItemModal v-if="showModal" @close-modal="toggleModal"></ItemModal>
+      </section>
+    </body>
+
+    <footer>
+      <Footer />
+    </footer>
   </div>
 </template>
 
-<style lang="less">
+<script>
+import ItemModal from './components/ItemModal.vue';
+import Footer from './components/Footer.vue';
+import NavBar from './components/NavBar.vue';
+
+export default {
+  name: 'app',
+  components: {
+    NavBar,
+    Footer,
+    ItemModal,
+  },
+  data() {
+    return {
+      showModal: false,
+    };
+  },
+  created() {
+    this.loadInitialData();
+  },
+  mounted() {
+  },
+  methods: {
+    loadInitialData() {
+      try {
+        this.$store.dispatch('getInitialData');
+      } catch (e) {
+        this.error = 'Error: configuration not loaded';
+      }
+    },
+    toggleModal() {
+      this.showModal = !this.showModal;
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono|Titillium+Web:200&display=swap);
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: $background-primary;
+  font-size: 100%;
+}
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  background-color: $background-secondary;
+  font-family: $font-primary, monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  color: $color-text-primary;
+  padding: 0;
+  font-size: 1em;
+}
+header{
+  border-bottom: 1px solid $background-border;
+  background-color: $background-secondary;
+}
+section {
+  display: block;
+  min-height: 400px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+footer{
+  margin-top: 2em;
+  border-top: 1px solid $background-border;
+  background-color: $background-secondary;
+}
+.message {
+  margin: 2em 20px;
+  font-size: 0.9em;
+  text-transform: uppercase;
 }
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.title {
+  margin: 1em 0 1em 20px;
+  font-family: $font-secondary, sans-serif;
+  color: $color-secondary;
+  font-size: 1.5em;
+  text-transform: uppercase;
+}
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
 }
 </style>
