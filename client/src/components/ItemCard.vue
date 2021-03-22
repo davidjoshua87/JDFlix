@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     viewDetail() {
-      this.$emit('item-clicked', this.items.imdbID, this.mediaType);
+      this.$emit('item-clicked', this.items.imdbID, this.mediaType, this.items.Rating);
     },
   },
 };

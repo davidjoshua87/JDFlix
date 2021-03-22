@@ -60,6 +60,9 @@ import noImage from '../assets/poster-not-available.png';
 export default {
   name: 'ItemModal',
   components: { ScoreIndicator },
+  data() {
+    return { };
+  },
   computed: {
     ...mapState(['type', 'itemInfo']),
     showItemInfo() {
@@ -197,7 +200,7 @@ a {
     border-radius: 5px;
     width: 780px;
     max-width: 90%;
-    max-height: 110%;
+    max-height: 90%;
     overflow-y: auto;
 
     .buttons_wrapper {

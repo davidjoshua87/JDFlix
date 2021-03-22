@@ -23,11 +23,14 @@ module.exports = {
   rules: {
     'linebreak-style': 0,
     'global-require': 0,
+    'no-param-reassign': 0,
+    'no-plusplus': 0,
+    'consistent-return': 0,
     // allow async-await
     'generator-star-spacing': 'off',
     // allow paren-less arrow functions
-    'arrow-parens': 'off',
     'one-var': 'off',
+    'arrow-parens': 'off',
     'import/first': 'off',
     'import/named': 'error',
     'import/namespace': 'error',

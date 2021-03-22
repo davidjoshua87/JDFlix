@@ -2,7 +2,7 @@ import BASE from './api';
 
 const key = process.env.VUE_APP_KEY_MOVIE_DB_1;
 const language = 'en-US';
-const includeAdult = 'true';
+const includeAdult = 'false';
 
 export default {
   getMovieCollection (name) {

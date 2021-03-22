@@ -1,15 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-// import SearchView from '../views/SearchView'
-// import MoviesView from '../views/MoviesView'
-// import TvShowsView from '../views/TvShowsView'
+import SearchView from '../views/SearchView.vue';
 import TopsView from '../views/TopsView.vue';
 
 Vue.use(Router);
 
 export default new Router({
-  // mode: 'history',
-  // base: process.env.NODE_ENV === 'development' ? '/' : '/vue-movies/',
   routes: [
     {
       path: '/',
@@ -20,21 +16,11 @@ export default new Router({
       name: 'tops',
       component: TopsView,
     },
-    // {
-    //   path: '/search',
-    //   name: 'search',
-    //   component: SearchView
-    // },
-    // {
-    //   path: '/movies',
-    //   name: 'movies',
-    //   component: MoviesView
-    // },
-    // {
-    //   path: '/tv-shows',
-    //   name: 'tv-shows',
-    //   component: TvShowsView
-    // },
+    {
+      path: '/search',
+      name: 'search',
+      component: SearchView,
+    },
     {
       path: '/*',
       redirect: { name: 'tops' },
