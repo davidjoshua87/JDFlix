@@ -1,5 +1,9 @@
 <template>
-  <div id="infinite-list">
+  <div>
+    <loading
+        :show="show"
+        :label="label">
+    </loading>
     <h2 class="title">
       <font-awesome-icon
         icon="film"
@@ -14,15 +18,15 @@
 
 <script>
 import { mapState } from 'vuex';
+import loading from 'vue-full-loading';
 import AppServices from '../services/appServices';
 import ItemList from '../components/ItemList.vue';
-
-// const ItemList = () => import('../components/ItemList.vue');
 
 export default {
   name: 'TopsView',
   components: {
     ItemList,
+    loading,
   },
   data() {
     return {
@@ -34,7 +38,8 @@ export default {
       titleTvs: [],
       tvs: [],
       type: ['movie', 'tv'],
-      loading: false,
+      show: false,
+      label: 'Loading...',
     };
   },
   created() {
@@ -49,7 +54,6 @@ export default {
       return this.movies;
     },
     async fetchTops() {
-      this.$loading.show();
       try {
         const [responseMovie, responseTv] = await Promise.all([
           AppServices.getTop('movie'),
@@ -78,7 +82,7 @@ export default {
       } catch (e) {
         this.error = e;
       } finally {
-        this.loading = true;
+        this.show = true;
       }
     },
     async getMovies(data) {
@@ -99,11 +103,11 @@ export default {
 
                 dataMovies = this.sortDataRating(dataMovies);
                 this.$store.dispatch('getMovies', dataMovies);
-                this.movies = dataMovies;
-                this.movies = dataMovies.slice(0, (this.numItems));
                 setTimeout(() => {
-                  this.$loading.hide();
-                }, 2000);
+                  this.movies = dataMovies;
+                  this.movies = dataMovies.slice(0, (this.numItems));
+                  this.show = false;
+                }, 3000);
                 return this.movies;
               });
             }
@@ -111,7 +115,7 @@ export default {
       } catch (e) {
         this.error = e;
       } finally {
-        this.loading = true;
+        this.show = true;
       }
     },
     viewDetailInfo(id, type, rating) {
