@@ -92,10 +92,10 @@ a {
   list-style: none;
   margin-bottom: 10px;
   padding: 0;
-  width: 50%;
+  width: 100%;
 
   div {
-    padding: 10px 20px;
+    padding: 20px 20px;
   }
 }
 

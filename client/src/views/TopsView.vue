@@ -1,24 +1,13 @@
 <template>
-  <div>
+  <div id="infinite-list">
     <h2 class="title">
       <font-awesome-icon
         icon="film"
         size="1x" />&nbsp;
-      List Movies
+      Top Rated Movies
     </h2>
     <ItemList :results="movies" :type="type[0]"
     @item-load="loadData"
-    @item-clicked="viewDetailInfo" />
-
-    <h2 class="title">
-      <font-awesome-icon
-        icon="tv"
-        transform="shrink-3"
-        size="1x" />&nbsp;
-        List TV shows
-      </h2>
-    <ItemList :results="tvs" :type="type[1]"
-    @item-load2="loadData2"
     @item-clicked="viewDetailInfo" />
   </div>
 </template>
@@ -27,6 +16,8 @@
 import { mapState } from 'vuex';
 import AppServices from '../services/appServices';
 import ItemList from '../components/ItemList.vue';
+
+// const ItemList = () => import('../components/ItemList.vue');
 
 export default {
   name: 'TopsView',
@@ -49,17 +40,16 @@ export default {
   created() {
     this.fetchTops();
   },
-  computed: { ...mapState(['dataMovies', 'dataTvs']) },
+  computed: { ...mapState(['dataMovies']) },
   methods: {
     loadData(num) {
-      this.movies = this.movies.concat([this.dataMovies[num - 1]]);
+      if (this.dataMovies.length >= num) {
+        this.movies = this.dataMovies.slice(0, num);
+      }
       return this.movies;
     },
-    loadData2(num) {
-      this.tvs = this.tvs.concat([this.dataTvs[num - 1]]);
-      return this.tvs;
-    },
     async fetchTops() {
+      this.$loading.show();
       try {
         const [responseMovie, responseTv] = await Promise.all([
           AppServices.getTop('movie'),
@@ -68,21 +58,23 @@ export default {
 
         this.resultsMovie = responseMovie.data.results;
         this.resultsTv = responseTv.data.results;
+
         this.resultsMovie = this.sortData(this.resultsMovie);
         this.resultsTv = this.sortData(this.resultsTv);
+
+        this.resultsTv.map(tv => {
+          tv.title = tv.name;
+          return tv;
+        });
+
+        this.resultsMovie = this.resultsMovie.concat(this.resultsTv);
 
         this.resultsMovie.map(movie => {
           this.titleMovies.push({ title: movie.title, rating: movie.vote_average });
           return this.titleMovies;
         });
 
-        this.resultsTv.map(tv => {
-          this.titleTvs.push({ title: tv.name, rating: tv.vote_average });
-          return this.titleTvs;
-        });
-
         this.getMovies(this.titleMovies);
-        this.getTvs(this.titleTvs);
       } catch (e) {
         this.error = e;
       } finally {
@@ -105,9 +97,13 @@ export default {
                   dataMovies.push(movie);
                 }
 
-                dataMovies = this.sortData(dataMovies);
+                dataMovies = this.sortDataRating(dataMovies);
                 this.$store.dispatch('getMovies', dataMovies);
+                this.movies = dataMovies;
                 this.movies = dataMovies.slice(0, (this.numItems));
+                setTimeout(() => {
+                  this.$loading.hide();
+                }, 2000);
                 return this.movies;
               });
             }
@@ -116,34 +112,6 @@ export default {
         this.error = e;
       } finally {
         this.loading = true;
-      }
-    },
-    async getTvs(data) {
-      try {
-        let datas = [];
-        let tvs = [];
-        let dataMovies = [];
-        data.map(d => AppServices.getMovieCollection(d.title)
-          .then(response => {
-            if (response.data.Response === 'True') {
-              datas = response.data.Search;
-              tvs = tvs.concat(datas);
-              tvs.map(movie => {
-                if (d.title.toLowerCase() === movie.Title.toLowerCase()) {
-                  movie.Rating = d.rating;
-                  dataMovies.push(movie);
-                }
-                dataMovies = this.sortData(dataMovies);
-                this.$store.dispatch('getTvs', dataMovies);
-                this.tvs = dataMovies.slice(0, (this.numItems));
-                return this.tvs;
-              });
-            }
-          }));
-      } catch (e) {
-        this.error = e;
-      } finally {
-        this.loading = false;
       }
     },
     viewDetailInfo(id, type, rating) {
@@ -156,6 +124,10 @@ export default {
     },
     sortData(value) {
       const data = value.sort((a, b) => (b.vote_average > a.vote_average ? 1 : -1));
+      return data;
+    },
+    sortDataRating(value) {
+      const data = value.sort((a, b) => (b.Rating > a.Rating ? 1 : -1));
       return data;
     },
   },

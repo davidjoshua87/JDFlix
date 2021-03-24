@@ -5,14 +5,16 @@
         <span class="fa fa-spinner fa-spin"></span> Loading
       </div>
     </transition>
-    <ul class="list-group" id="infinite-list">
-      <ItemCard v-for="(item, index) in results" :key="index" :items="item" :type="type"
+    <ul>
+      <ItemCard
+      v-for="(item, index) in results" :key="index" :items="item" :type="type"
       v-on='$listeners' />
     </ul>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import ItemCard from './ItemCard';
 
 export default {
@@ -24,29 +26,33 @@ export default {
   data() {
     return { num: 5, loading: false };
   },
+  created() {
+  },
+  computed: { ...mapState(['dataMovies']) },
   mounted () {
-    this.loadData();
-    // this.loadData2();
-    // this.loadData3();
+    this.scroll();
   },
   methods: {
-    loadData() {
-      let listElm = '';
-      listElm = document.querySelector('#infinite-list');
-      listElm.addEventListener('scroll', () => {
-        if (listElm.scrollTop + listElm.clientHeight > listElm.scrollHeight) {
-          this.$emit('item-load', this.num += 1);
+    scroll () {
+      window.onscroll = () => {
+        let bottomOfWindow = null;
+        bottomOfWindow = Math.ceil(document.documentElement.scrollTop + window.innerHeight)
+        === document.documentElement.offsetHeight;
+        if (bottomOfWindow) {
+          let numberAdd = 0;
+          numberAdd = this.dataMovies.length % 5;
+          if (this.dataMovies.length - this.num === numberAdd) {
+            this.$emit('item-load', this.num + numberAdd);
+          } else {
+            this.$emit('item-load', this.num += 5);
+          }
         }
-      });
-    },
-    loadData2() {
-      let listElm = '';
-      listElm = document.querySelector('#infinite-list');
-      listElm.addEventListener('scroll', () => {
-        if (listElm.scrollTop + listElm.clientHeight > listElm.scrollHeight) {
-          this.$emit('item-load2', this.num += 1);
+
+        if (document.documentElement.scrollTop === 0) {
+          this.num = 5;
+          this.$emit('item-load', this.num);
         }
-      });
+      };
     },
     loadData3() {
       let listElm = '';
@@ -81,14 +87,6 @@ export default {
     border-radius: 5px;
   }
 
-  .list-group-item {
-    margin-top: 1px;
-    border-left: none;
-    border-right: none;
-    border-top: none;
-    border-bottom: 2px solid $background-border;
-  }
-
   .loading {
     text-align: center;
     position: absolute;
@@ -99,15 +97,5 @@ export default {
     border-radius: 5px;
     left: calc(50% - 45px);
     top: calc(50% - 18px);
-  }
-
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity .5s
-  }
-
-  .fade-enter,
-  .fade-leave-to {
-    opacity: 0
   }
 </style>
