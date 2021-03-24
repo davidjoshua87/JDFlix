@@ -14,8 +14,8 @@ export default {
   getConfiguration() {
     return BASE.API_1.get(`configuration?api_key=${key}`);
   },
-  search(query, page) {
-    const url = `search/multi?api_key=${key}&language=${language}&query=${query}&page=${page}&include_adult=${includeAdult}`;
+  getsearch(query) {
+    const url = `search/multi?api_key=${key}&language=${language}&query=${query}&page=1&include_adult=${includeAdult}`;
     return BASE.API_1.get(url);
   },
   getTop(type) {

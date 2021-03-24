@@ -13,8 +13,6 @@ export default new Vuex.Store({
     itemInfo: {},
   },
   getters: {
-    // imgPath: (state) => `${state.baseUrl}w370_and_h556_bestv2`,
-    // backgroundPath: state => `${state.baseUrl}w1400_and_h450_face`
   },
 
   mutations: {

@@ -3,8 +3,10 @@
     <button>
       <font-awesome-icon icon="search" transform="shrink-6" size="2x" class="icon-search" />
     </button>
-    <input type="text" maxlength="20" v-model="query" @keypress.enter="search" @blur="resetSearch"
-      placeholder="Search movie or TV show..." />
+    <input type="text" maxlength="20" v-model="query"
+    @keyup="search()"
+    @keypress.enter="search"
+    placeholder="Search movie or TV show..." />
   </div>
 </template>
 
@@ -19,10 +21,9 @@ export default {
   },
   methods: {
     search() {
-      if ((this.query.length >= 2) && (this.query !== this.lastQuery)) {
+      if ((this.query.length >= 3) && (this.query !== this.lastQuery)) {
         this.lastQuery = this.query;
         this.$router.push(`/search?q=${this.query}`);
-        this.resetSearch();
       }
     },
     resetSearch() {

@@ -28,7 +28,7 @@ import ItemCard from './ItemCard';
 
 export default {
   name: 'ItemList',
-  props: ['results', 'type'],
+  props: ['results', 'type', 'source'],
   components: {
     ItemCard,
     RingLoader,
@@ -45,7 +45,7 @@ export default {
   },
   created() {
   },
-  computed: { ...mapState(['dataMovies']) },
+  computed: { ...mapState(['dataMovies', 'dataSearch']) },
   mounted () {
     this.scroll();
   },
@@ -56,23 +56,35 @@ export default {
         bottomOfWindow = Math.ceil(document.documentElement.scrollTop + window.innerHeight)
         === document.documentElement.offsetHeight;
         if (bottomOfWindow) {
-          this.loading = true;
           this.dataEnd = false;
-          let numberAdd = 0;
-          numberAdd = this.dataMovies.length % 5;
-          if (this.dataMovies.length - this.num === numberAdd) {
-            setTimeout(() => {
-              this.$emit('item-load', this.num + numberAdd);
-              this.loading = false;
-              if (this.dataMovies.length % 5 !== 0) {
-                this.dataEnd = true;
-              }
-            }, 1000);
+          if (this.dataEnd === false) {
+            this.loading = true;
+            let numberAdd = 0;
+            let length = 0;
+            if (this.source === 'top') {
+              length = this.dataMovies.length;
+              numberAdd = length % 5;
+            } else {
+              length = this.dataSearch.length;
+              numberAdd = length % 5;
+            }
+
+            if (length - this.num === numberAdd) {
+              setTimeout(() => {
+                this.$emit('item-load', this.num + numberAdd);
+                this.loading = false;
+                if (length % 5 !== 0) {
+                  this.dataEnd = true;
+                }
+              }, 1000);
+            } else {
+              setTimeout(() => {
+                this.$emit('item-load', this.num += 5);
+                this.loading = false;
+              }, 1000);
+            }
           } else {
-            setTimeout(() => {
-              this.$emit('item-load', this.num += 5);
-              this.loading = false;
-            }, 1000);
+            this.loading = false;
           }
         }
 
@@ -80,17 +92,9 @@ export default {
           this.num = 5;
           this.$emit('item-load', this.num);
           this.loading = false;
+          this.dataEnd = false;
         }
       };
-    },
-    loadData3() {
-      let listElm = '';
-      listElm = document.querySelector('#infinite-list');
-      listElm.addEventListener('scroll', () => {
-        if (listElm.scrollTop + listElm.clientHeight > listElm.scrollHeight) {
-          this.$emit('item-load3', this.num += 1);
-        }
-      });
     },
   },
 };

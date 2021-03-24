@@ -1,5 +1,9 @@
 <template>
   <div>
+    <loading
+        :show="show"
+        :label="label">
+    </loading>
     <div class="message">
       <div v-show="showResults">
         Results found for
@@ -14,7 +18,7 @@
         </h2>
       </div>
 
-    <ItemList :results="results" :type="type[0]"
+    <ItemList :results="results" :type="type[0]" source="search"
     @item-load="loadData"
     @item-clicked="viewDetailInfo" />
   </div>
@@ -22,6 +26,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import loading from 'vue-full-loading';
 import ItemList from '../components/ItemList';
 import AppServices from '../services/appServices';
 
@@ -29,6 +34,8 @@ export default {
   name: 'SearchView',
   components: {
     ItemList,
+    loading,
+
   },
   data() {
     return {
@@ -39,68 +46,102 @@ export default {
       showResults: false,
       error: '',
       results: [],
-      type: ['movie', 'tv'],
+      resultsMovie: [],
+      titleMovies: [],
+      type: ['movie'],
       totalResults: null,
       totalPages: null,
+      show: false,
+      label: 'Loading...',
     };
   },
   computed: {
     ...mapState(['dataSearch']),
-    loadMore() {
-      return this.totalPages > this.page;
-    },
     showMessage() {
       return !!(this.searching || this.error !== '');
     },
   },
   created() {
-    this.fetchData('INIT');
+    this.fetchData();
   },
   methods: {
     loadData(num) {
-      this.results = this.results.concat([this.dataSearch[num - 1]]);
+      if (this.dataSearch.length >= num) {
+        this.results = this.dataSearch.slice(0, num);
+      }
       return this.results;
     },
-    async fetchData(action) {
-      if (action === 'INIT') {
-        this.searching = true;
-        this.results = [];
-      } else {
-        this.loading = true;
-      }
-
+    async fetchData() {
       try {
+        const [responseMovie] = await Promise.all([
+          AppServices.getsearch(this.query),
+        ]);
+
+        this.resultsMovie = responseMovie.data.results;
+
+        this.resultsMovie = this.sortData(this.resultsMovie);
+
+        this.resultsMovie.map(movie => {
+          if (movie.media_type === 'tv') {
+            movie.title = movie.name;
+          }
+          this.titleMovies.push({ title: movie.title, rating: movie.vote_average });
+          return this.titleMovies;
+        });
+        this.getMovies(this.titleMovies);
+      } catch (e) {
+        this.error = e;
+      } finally {
+        this.show = true;
+      }
+    },
+    async getMovies(data) {
+      try {
+        let movies = [];
         let dataMovies = [];
-        AppServices.getMovieCollection(this.query)
+        await data.map(d => AppServices.getMovieCollection(d.title)
           .then(response => {
             if (response.data.Response === 'True') {
               this.searching = true;
               this.showResults = true;
-              dataMovies = response.data.Search;
-              this.totalResults = dataMovies.length;
-              dataMovies = this.sortData(dataMovies);
-              this.$store.dispatch('getSearch', dataMovies);
-              this.results = dataMovies.slice(0, (this.numItems));
+              movies = response.data.Search;
+              movies.map(movie => {
+                if (d.title !== undefined && movie.Title !== undefined) {
+                  if (d.title.toLowerCase() === movie.Title.toLowerCase()) {
+                    movie.Rating = d.rating;
+                    dataMovies.push(movie);
+                  }
+                  dataMovies = this.sortDataRating(dataMovies);
+                  this.totalResults = dataMovies.length;
+                  this.$store.dispatch('getSearch', dataMovies);
+                  setTimeout(() => {
+                    this.results = dataMovies.slice(0, (this.numItems));
+                    this.show = false;
+                  }, 3000);
+                }
+                return this.results;
+              });
             } else {
               this.error = response.data.Error;
               this.searching = false;
               this.showResults = false;
+              this.show = false;
               this.totalResults = null;
-              setTimeout(() => {
-                delete this.query.param;
-                this.$router.push('/');
-              }, 3000);
+              // setTimeout(() => {
+              //   delete this.query.param;
+              //   this.$router.push('/');
+              // }, 3000);
             }
-          });
+          }));
       } catch (e) {
         this.error = e;
       } finally {
-        this.loading = false;
+        this.show = true;
       }
     },
-    viewDetailInfo(id, type) {
+    viewDetailInfo(id, type, rating) {
       try {
-        this.$store.dispatch('getItem', { id, type });
+        this.$store.dispatch('getItem', { id, type, rating });
         this.$emit('open-modal');
       } catch (e) {
         this.error = e;
@@ -108,6 +149,10 @@ export default {
     },
     sortData(value) {
       const data = value.sort((a, b) => (b.vote_average > a.vote_average ? 1 : -1));
+      return data;
+    },
+    sortDataRating(value) {
+      const data = value.sort((a, b) => (b.Rating > a.Rating ? 1 : -1));
       return data;
     },
   },

@@ -10,7 +10,7 @@
         size="1x" />&nbsp;
       Top Rated Movies
     </h2>
-    <ItemList :results="movies" :type="type[0]"
+    <ItemList :results="movies" :type="type[0]" source="top"
     @item-load="loadData"
     @item-clicked="viewDetailInfo" />
   </div>
@@ -38,7 +38,7 @@ export default {
       resultsTv: [],
       titleTvs: [],
       tvs: [],
-      type: ['movie', 'tv'],
+      type: ['movie'],
       show: false,
       label: 'Loading...',
     };
@@ -91,7 +91,7 @@ export default {
         let datas = [];
         let movies = [];
         let dataMovies = [];
-        data.map(d => AppServices.getMovieCollection(d.title)
+        await data.map(d => AppServices.getMovieCollection(d.title)
           .then(response => {
             if (response.data.Response === 'True') {
               datas = response.data.Search;
@@ -105,7 +105,6 @@ export default {
                 dataMovies = this.sortDataRating(dataMovies);
                 this.$store.dispatch('getMovies', dataMovies);
                 setTimeout(() => {
-                  this.movies = dataMovies;
                   this.movies = dataMovies.slice(0, (this.numItems));
                   this.show = false;
                 }, 3000);

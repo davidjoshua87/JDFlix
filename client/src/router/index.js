@@ -21,9 +21,5 @@ export default new Router({
       name: 'search',
       component: SearchView,
     },
-    {
-      path: '/*',
-      redirect: { name: 'tops' },
-    },
   ],
 });

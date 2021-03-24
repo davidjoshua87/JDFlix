@@ -99,11 +99,11 @@ export default {
 
 <style lang="scss" scoped>
 figure {
-  margin: 0 0 0.5em;
+  margin: 0 0 0.7em;
 }
 img {
-  width: 100%;
-  height: 85%;
+  width: 75%;
+  border-radius: 5px;
 }
 .rating {
   padding-bottom: 30px;

@@ -2,7 +2,7 @@
   <div class="navigation">
     <ul>
       <li v-for="(link, idx) in links" :key="idx">
-        <router-link :to="link.url" @click="resetSearch">
+        <router-link :to="link.url" v-on:click.native="loadData">
           <font-awesome-icon :icon="link.icon" :transform="link.transform" size="2x" class="icon" />
           <br />
           <span>{{ link.text }}</span>
@@ -34,14 +34,13 @@ export default {
     };
   },
   methods: {
-    resetSearch() {
-      this.query = '';
+    loadData() {
+      window.location.reload();
     },
   },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 ul {
   margin: 0;

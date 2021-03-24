@@ -11,10 +11,7 @@
         <a href="http://www.omdbapi.com/">The Open Movie Database</a>
       </li>
       <li>
-        <a href="https://github.com/davidjoshua87/JDFlix">Repo on github</a>
-      </li>
-      <li>
-        &copy; by
+        &copy; 2021.
         <a href="https://github.com/davidjoshua87">JDsFlix</a>
       </li>
     </ul>
@@ -24,7 +21,7 @@
 <style lang="scss" scoped>
 .footer {
   margin: 0 auto;
-  padding: 4em 0;
+  padding: 1em 0;
   text-align: center;
   font-size: 0.9em;
 }
