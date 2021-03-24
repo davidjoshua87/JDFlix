@@ -56,7 +56,8 @@ figure {
 }
 img {
   width: 100%;
-  max-height: 250px;
+  max-height: 100%;
+  border-radius: 5px;
   box-shadow: 0px 1px 5px 0px $poster-shadow;
   box-sizing: border-box;
 }

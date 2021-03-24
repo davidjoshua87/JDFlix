@@ -27,6 +27,7 @@ export default {
   components: {
     ItemList,
     loading,
+
   },
   data() {
     return {

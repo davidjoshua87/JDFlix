@@ -10,7 +10,7 @@
             </figure>
             <ScoreIndicator
               :score="valueRating"
-              :size="'85'"
+              :size="'70'"
               :stroke-width="'5'"
               :stroke-color="'#ff6633'"
             />
@@ -99,18 +99,19 @@ export default {
 
 <style lang="scss" scoped>
 figure {
-  margin: 0 0 1.5em;
+  margin: 0 0 0.5em;
 }
 img {
   width: 100%;
-  height: 100%;
+  height: 85%;
 }
 .rating {
   padding-bottom: 30px;
 }
 h1 {
   margin-top: 0;
-  font-size: 2em;
+  margin-bottom: 0;
+  font-size: 1.7em;
   color: $color-primary;
 }
 ul {
@@ -151,14 +152,14 @@ a {
 }
 .poster{
   display: block;
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
   text-align: center;
 }
 .info {
   display: block;
 }
 .label {
-  margin: 1em 0 0.2em;
+  margin: 0.5em 0 0.1em;
   font-family: $font-secondary, sans-serif;
   color: $color-secondary;
   font-size: 1em;
@@ -198,7 +199,7 @@ a {
     box-shadow: 0 1px 5px $modal-color-shadow;
     text-align: left;
     border-radius: 5px;
-    width: 780px;
+    width: 825px;
     max-width: 90%;
     max-height: 90%;
     overflow-y: auto;
