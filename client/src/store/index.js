@@ -23,7 +23,6 @@ export default new Vuex.Store({
       Vue.set(state, 'itemInfo', {});
     },
     GET_ITEM: (state, { type, info, rating }) => {
-      console.log(rating);
       const itemInfo = {
         type,
         poster: info.Poster,

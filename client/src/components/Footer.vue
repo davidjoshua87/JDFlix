@@ -8,12 +8,12 @@
       </li>
       <li>
         and
-        <a href="http://www.omdbapi.com/">The Open Movie Database</a>
+        <a href="https://www.omdbapi.com/">The Open Movie Database</a>
       </li>
-      <li>
+      <!-- <li>
         &copy; 2021.
         <a href="https://github.com/davidjoshua87">JDsFlix</a>
-      </li>
+      </li> -->
     </ul>
   </div>
 </template>
