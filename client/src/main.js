@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import App from './App.vue';
-import './registerServiceWorker';
+import wb from './registerServiceWorker';
 import router from './router';
 import store from './store';
 
@@ -11,11 +11,12 @@ import {
   faSearch,
   faTimes,
   faStar,
+  faDownload,
 } from '../node_modules/@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '../node_modules/@fortawesome/vue-fontawesome';
 
-library.add(faFilm, faTv, faSearch, faTimes, faStar);
-
+library.add(faFilm, faTv, faSearch, faTimes, faStar, faDownload);
+Vue.prototype.$workbox = wb;
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.config.productionTip = false;
 

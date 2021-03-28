@@ -8,7 +8,7 @@
           :type="type"
           v-on='$listeners' />
         </ul>
-        <p v-show="loading" class="loading-text">Loading...</p>
+        <p v-show="loading" class="loading-text">Loading More Movie...</p>
         <ring-loader
         class="loading"
         :loading="loading"

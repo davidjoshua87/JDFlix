@@ -10,6 +10,27 @@
           <router-view :key="$route.fullPath" @open-modal="toggleModal" />
         </keep-alive>
         <ItemModal v-if="showModal" @close-modal="toggleModal"></ItemModal>
+        <InstallModal v-if="prompt" :event="installEvent"
+        @close-modal2="toggleModal2"></InstallModal>
+        <div class="update-dialog" v-if="dialog_update">
+          <div class="overlay">
+            <div class="modal_content">
+              <div class="title">
+                A new version is found. Update to load it?
+              </div>
+              <div class="update-dialog__actions">
+                <button class="update-dialog__button update-dialog__button--confirm"
+                @click="update">
+                  Update
+                </button>
+                <button class="update-dialog__button update-dialog__button--cancel"
+                @click="dialog_update = false">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </body>
 
@@ -21,6 +42,7 @@
 
 <script>
 import ItemModal from './components/ItemModal.vue';
+import InstallModal from './components/InstallModal.vue';
 import Footer from './components/Footer.vue';
 import NavBar from './components/NavBar.vue';
 
@@ -30,18 +52,36 @@ export default {
     NavBar,
     Footer,
     ItemModal,
+    InstallModal,
   },
   data() {
     return {
       showModal: false,
+      prompt: false,
+      dialog_update: false,
+      installEvent: null,
     };
   },
   created() {
+    if (this.$workbox) {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        this.installEvent = e;
+        this.prompt = true;
+      });
+      this.$workbox.addEventListener('waiting', () => {
+        this.dialog_update = true;
+      });
+    }
     this.loadInitialData();
   },
   mounted() {
   },
   methods: {
+    async update() {
+      this.dialog_update = false;
+      await this.$workbox.messageSW({ type: 'SKIP_WAITING' });
+    },
     loadInitialData() {
       try {
         this.$store.dispatch('getInitialData');
@@ -51,6 +91,9 @@ export default {
     },
     toggleModal() {
       this.showModal = !this.showModal;
+    },
+    toggleModal2() {
+      this.prompt = !this.prompt;
     },
   },
 };
@@ -97,14 +140,59 @@ footer{
 
 .title {
   margin: 1em 0 1em 20px;
-  font-family: $font-secondary, sans-serif;
-  color: $color-secondary;
-  font-size: 1.5em;
-  text-transform: uppercase;
+  color: $color-primary;
+  font-size: 1em;
 }
 .clearfix::after {
   content: "";
   clear: both;
   display: table;
+}
+.update-dialog {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 990;
+
+  .overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 995;
+    background: $modal-background-overlay;
+  }
+
+  .modal_content {
+    z-index: 999;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: $modal-background;
+    box-shadow: 0 1px 5px $modal-color-shadow;
+    text-align: left;
+    border-radius: 5px;
+    width: 425px;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+  }
+
+  &__actions {
+    display: flex;
+    margin-top: 8px;
+  }
+  &__button {
+    margin-right: 10px;
+    &--confirm {
+      margin-left: auto;
+    }
+  }
 }
 </style>

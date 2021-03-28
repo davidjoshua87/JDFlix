@@ -95,7 +95,6 @@ export default {
 
       this.increaseValue(int, 'int', decPoint);
       const x = (dec > 0) ? this.increaseValue(dec, 'dec') : this.valueDec = '0';
-      console.log(x, 'x');
     },
     increaseValue(value, type, decPoint = '0') {
       const interval = this.transitionDuration / value;
@@ -103,7 +102,6 @@ export default {
       const increaseInterval = setInterval(() => {
         if (counter === value) { window.clearInterval(increaseInterval); }
         const y = (type === 'int') ? this.valueInt = counter + decPoint : this.valueDec = counter;
-        console.log(y, 'y');
         counter += 1;
       }, interval);
     },

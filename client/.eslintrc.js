@@ -28,6 +28,8 @@ module.exports = {
     'no-param-reassign': 0,
     'no-plusplus': 0,
     'consistent-return': 0,
+    'vue/comment-directive': 0,
+    'space-before-function-paren': 0,
     // allow async-await
     'generator-star-spacing': 'off',
     // allow paren-less arrow functions
@@ -44,12 +46,12 @@ module.exports = {
     'prefer-promise-reject-errors': 'off',
     'prefer-const': ['error', {
       destructuring: 'all',
-      ignoreReadBeforeAssign: false,
+      ignoreReadBeforeAssign: true,
     }],
+    'no-unused-vars': 0,
     // allow console.log during development only
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'space-before-function-paren': 0,
   },
 };
