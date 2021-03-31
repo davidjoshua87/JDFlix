@@ -1,3 +1,3 @@
 # JDFlix
 
-## This is a mini project about movie
+### This is a mini project about movie
