@@ -1,30 +1,101 @@
 <template>
-  <div class="search-container">
-    <button>
-      <font-awesome-icon icon="search" transform="shrink-6" size="2x" class="icon-search" />
-    </button>
-    <input type="text" maxlength="20" v-model="query"
-    @keyup="search()"
-    @keypress.enter="search"
-    placeholder="Search movie or TV show..." />
+  <div>
+    <div class="search-container">
+      <button>
+        <font-awesome-icon icon="search" transform="shrink-6" size="2x" class="icon-search" />
+      </button>
+      <input type="text" maxlength="20" v-model="search"
+        @keypress.enter="getSearch"
+        @input="validInput"
+        placeholder="Search movie or TV show..."/>
+      <span class="message" v-show="showResults">
+        Results search keyword
+        <span class="query">{{ query }}</span>
+        : <span class="length">{{ dataSearch.length }}</span>
+      </span>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+import Swal from 'sweetalert2';
+
 export default {
   name: 'SearchBar',
   data() {
     return {
       query: '',
+      search: '',
       lastQuery: null,
+      totalResults: null,
+      valid: false,
+      showResults: false,
     };
   },
+  computed: {
+    ...mapState(['dataSearch']),
+  },
   methods: {
-    search() {
-      if ((this.query.length >= 3) && (this.query !== this.lastQuery)) {
-        this.lastQuery = this.query;
-        this.$router.push(`/search?q=${this.query}`);
+    getSearch(val) {
+      if (val === true) {
+        let path = '';
+        path = this.$route.path;
+        this.query = this.lastQuery;
+        this.showResults = true;
+        if (path !== `/search?q=${this.query}`) {
+          this.$emit('show-loading');
+          this.$router.push(`/search?q=${this.query}`);
+        }
+      } else {
+        let path = '';
+        path = this.$route.path;
+        this.showResults = false;
+        if (path !== '/data-not-found') {
+          this.$emit('show-loading');
+          this.$router.push('/data-not-found');
+        }
       }
+    },
+    validInput() {
+      setTimeout(() => {
+        const Toast = Swal.mixin({
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+          },
+        });
+        if (this.search.length >= 3) {
+          if (this.search !== this.lastQuery || this.search === this.query) {
+            this.lastQuery = this.search;
+            this.$nextTick(() => {
+              this.valid = true;
+              this.getSearch(this.valid);
+            });
+            setTimeout(() => {
+              Toast.fire({
+                icon: 'success',
+                title: 'Searched in Successfully',
+              });
+            }, 2000);
+          }
+        } else {
+          this.$nextTick(() => {
+            this.valid = false;
+            this.getSearch(this.valid);
+          });
+          setTimeout(() => {
+            Toast.fire({
+              icon: 'error',
+              title: 'Enter Keywords More Than 3 Characters!',
+            });
+          }, 2000);
+        }
+      }, 2000);
     },
     resetSearch() {
       this.query = '';
@@ -35,9 +106,27 @@ export default {
 
 <style lang="scss" scoped>
 .search-container {
+  position: relative;
   display: flex;
   align-items: center;
   height: 60px;
+}
+.message {
+  position: absolute;
+  right: 25px;
+  font-size: 0.8em;
+  text-transform: capitalize;
+}
+.query {
+  color: $color-text-primary;
+  font-weight: bold;
+  font-style: italic;
+  text-transform: lowercase;
+}
+.length {
+  color: $color-primary;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 input {
   border: 0;
@@ -57,6 +146,11 @@ button {
 
   .icon-search {
     color: $color-primary;
+  }
+}
+@media (max-width: 576px) {
+  .message {
+    font-size: 0.6em;
   }
 }
 @include sm {

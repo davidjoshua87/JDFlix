@@ -9,7 +9,8 @@
         </router-link>
       </li>
       <li>
-        <SearchBar />
+        <SearchBar
+        v-on='$listeners'/>
       </li>
     </ul>
   </div>

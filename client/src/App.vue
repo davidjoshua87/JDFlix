@@ -1,13 +1,22 @@
 <template>
   <div id="app">
     <header>
-      <NavBar />
+      <NavBar @show-loading="showLoading"/>
     </header>
     {{ }}
     <body>
+      <div v-show="showing === true" class="loading-overlay">
+        <ring-loader
+          class="loading"
+          :loading="showing"
+          :color="color"
+          :size="size">
+        </ring-loader>
+      </div>
       <section>
         <keep-alive>
-          <router-view :key="$route.fullPath" @open-modal="toggleModal" />
+          <router-view :key="$route.fullPath"
+          @open-modal="toggleModal" />
         </keep-alive>
         <ItemModal v-if="showModal" @close-modal="toggleModal"></ItemModal>
         <InstallModal v-if="prompt" :event="installEvent"
@@ -41,6 +50,7 @@
 </template>
 
 <script>
+import RingLoader from 'vue-spinner/src/PulseLoader.vue';
 import ItemModal from './components/ItemModal.vue';
 import InstallModal from './components/InstallModal.vue';
 import Footer from './components/Footer.vue';
@@ -53,13 +63,17 @@ export default {
     Footer,
     ItemModal,
     InstallModal,
+    RingLoader,
   },
   data() {
     return {
       showModal: false,
       prompt: false,
       dialog_update: false,
+      showing: false,
       installEvent: null,
+      color: 'white',
+      size: '10px',
     };
   },
   created() {
@@ -67,7 +81,6 @@ export default {
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         this.installEvent = e;
-        this.prompt = true;
       });
       this.$workbox.addEventListener('waiting', () => {
         this.dialog_update = true;
@@ -75,7 +88,10 @@ export default {
     }
     this.loadInitialData();
   },
+  computed: {
+  },
   mounted() {
+    this.showing = true;
   },
   methods: {
     async update() {
@@ -84,7 +100,11 @@ export default {
     },
     loadInitialData() {
       try {
-        this.$store.dispatch('getInitialData');
+        setTimeout(() => {
+          this.$store.dispatch('getInitialData');
+          this.showing = false;
+          this.prompt = true;
+        }, 2000);
       } catch (e) {
         this.error = 'Error: configuration not loaded';
       }
@@ -94,6 +114,14 @@ export default {
     },
     toggleModal2() {
       this.prompt = !this.prompt;
+    },
+    showLoading() {
+      this.showing = !this.showing;
+      if (this.showing === true) {
+        setTimeout(() => {
+          this.showing = false;
+        }, 2000);
+      }
     },
   },
 };
@@ -121,6 +149,29 @@ header{
   border-bottom: 1px solid $background-border;
   background-color: $background-secondary;
 }
+.loading-overlay {
+  background: $modal-background-overlay;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+}
+.loading {
+  text-align: center;
+  position: absolute;
+  display: inline-block;
+  color: $color-text-primary;
+  background: $color-primary;
+  padding: 5px;
+  border-radius: 5px;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+}
 section {
   display: block;
   min-height: 400px;
@@ -132,12 +183,6 @@ footer{
   border-top: 1px solid $background-border;
   background-color: $background-secondary;
 }
-.message {
-  margin: 2em 20px;
-  font-size: 0.9em;
-  text-transform: uppercase;
-}
-
 .title {
   margin: 1em 0 1em 20px;
   color: $color-primary;

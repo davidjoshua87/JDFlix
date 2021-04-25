@@ -1,32 +1,19 @@
 <template>
-  <div>
-    <loading
-        :show="show"
-        :label="label">
-    </loading>
-    <div class="message">
-      <div v-show="showResults">
-        Results found for
-        <span class="query">{{ query }}</span>
-        : {{ totalResults }}
-      </div>
+  <div class="container">
+    <div class="title" v-show="showMessage">
+      <h2>
+        <font-awesome-icon icon="film" size="1x" />&nbsp;
+        Result Search
+      </h2>
     </div>
-    <div v-show="showMessage">
-        <h2 class="title">
-          <font-awesome-icon icon="film" size="1x" />&nbsp;
-          Result Search
-        </h2>
-      </div>
-
     <ItemList :results="results" :type="type[0]" source="search"
     @item-load="loadData"
-    @item-clicked="viewDetailInfo" />
+    @item-clicked="viewDetailInfo"/>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import loading from 'vue-full-loading';
 import ItemList from '../components/ItemList';
 import AppServices from '../services/appServices';
 
@@ -34,13 +21,11 @@ export default {
   name: 'SearchView',
   components: {
     ItemList,
-    loading,
-
   },
   data() {
     return {
       query: this.$route.query.q,
-      numItems: 5,
+      numItems: 10,
       searching: false,
       loading: false,
       showResults: false,
@@ -127,10 +112,6 @@ export default {
               this.showResults = false;
               this.show = false;
               this.totalResults = null;
-              // setTimeout(() => {
-              //   delete this.query.param;
-              //   this.$router.push('/');
-              // }, 3000);
             }
           }));
       } catch (e) {
@@ -160,19 +141,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.query {
-  color: $color-primary;
-  font-weight: bold;
-  font-style: italic;
-  text-transform: lowercase;
-}
-.title {
-margin-top: 20px;
+.title h2 {
   display: block;
-  height: 100%;
   text-align: center;
   color: $color-text-primary;
-  text-decoration: none;
+  margin-top: 30px;
 
   &:hover {
     color: $color-primary;

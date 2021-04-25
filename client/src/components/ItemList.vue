@@ -1,21 +1,25 @@
 <template>
   <div class="list-group-wrapper">
     <transition name="fade">
-      <div>
+      <div class="container">
         <ul>
           <ItemCard v-for="(item, index) in results" :key="index"
           :items="item"
           :type="type"
           v-on='$listeners' />
         </ul>
-        <p v-show="loading" class="loading-text">Loading More Movie...</p>
-        <ring-loader
-        class="loading"
-        :loading="loading"
-        :color="color"
-        :size="size">
-        </ring-loader>
-        <p v-show="dataEnd" class="loading">End List Movie</p>
+        <div class="loading-text">
+          <p v-show="loading">Loading More Movie</p>
+          <p v-show="dataEnd" class="loading-end">End List Movie</p>
+        </div>
+        <div>
+          <ring-loader
+            class="loading"
+            :loading="loading"
+            :color="color"
+            :size="size">
+          </ring-loader>
+        </div>
       </div>
     </transition>
   </div>
@@ -32,11 +36,10 @@ export default {
   components: {
     ItemCard,
     RingLoader,
-
   },
   data() {
     return {
-      num: 5,
+      num: 10,
       loading: false,
       dataEnd: false,
       color: 'white',
@@ -68,14 +71,11 @@ export default {
               length = this.dataSearch.length;
               numberAdd = length % 5;
             }
-
-            if (length - this.num === numberAdd) {
+            if ((length - this.num) <= numberAdd) {
               setTimeout(() => {
                 this.$emit('item-load', this.num + numberAdd);
                 this.loading = false;
-                if (length % 5 !== 0) {
-                  this.dataEnd = true;
-                }
+                this.dataEnd = true;
               }, 1000);
             } else {
               setTimeout(() => {
@@ -89,7 +89,7 @@ export default {
         }
 
         if (document.documentElement.scrollTop === 0) {
-          this.num = 5;
+          this.num = 10;
           this.$emit('item-load', this.num);
           this.loading = false;
           this.dataEnd = false;
@@ -113,29 +113,28 @@ export default {
     position: relative;
   }
 
-  .list-group {
-    overflow: auto;
-    height: 50vh;
-    border: 2px solid $background-border;
-    border-radius: 5px;
-  }
-
   .loading {
     text-align: center;
     position: absolute;
     color: $color-text-primary;
-    z-index: 9;
     background: $color-primary;
-    padding: 5px;
+    padding: 4px;
     border-radius: 5px;
-    left: calc(50% - 45px);
-    // top: calc(50% - 18px);
+    left: calc(50% - 25px);
+    right: calc(50% - 25px);
   }
   .loading-text {
     text-align: center;
     color: $color-text-primary;
     font-family: $font-primary;
-    left: calc(50% - 45px);
-    // top: calc(50% - 18px);
+    margin: auto;
+    .loading-end {
+      position: absolute;
+      background: $color-primary;
+      padding: 4px;
+      border-radius: 5px;
+      left: calc(50% - 60px);
+      right: calc(50% - 60px);
+    }
   }
 </style>
